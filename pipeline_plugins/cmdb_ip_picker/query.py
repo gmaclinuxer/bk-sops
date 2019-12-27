@@ -11,8 +11,7 @@ an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express o
 specific language governing permissions and limitations under the License.
 """
 
-import json
-
+import ujson as json
 from django.http import JsonResponse
 from django.utils.translation import ugettext_lazy as _
 
@@ -22,7 +21,7 @@ from gcloud.conf import settings
 from .utils import get_cmdb_topo_tree
 from .constants import NO_ERROR, ERROR_CODES
 
-get_client_by_request = settings.ESB_GET_CLIENT_BY_REQUEST
+get_client_by_user = settings.ESB_GET_CLIENT_BY_USER
 
 
 def cmdb_search_topo_tree(request, bk_biz_id, bk_supplier_account=''):
@@ -49,7 +48,7 @@ def cmdb_search_host(request, bk_biz_id, bk_supplier_account='', bk_supplier_id=
     @return:
     """
     fields = json.loads(request.GET.get('fields', '[]'))
-    client = get_client_by_request(request)
+    client = get_client_by_user(request.user.username)
     condition = [{
         'bk_obj_id': 'host',
         'fields': [],
@@ -126,7 +125,7 @@ def cmdb_get_mainline_object_topo(request, bk_biz_id, bk_supplier_account=''):
         'bk_biz_id': bk_biz_id,
         'bk_supplier_account': bk_supplier_account,
     }
-    client = get_client_by_request(request)
+    client = get_client_by_user(request.user.username)
     cc_result = client.cc.get_mainline_object_topo(kwargs)
     if not cc_result['result']:
         message = handle_api_error(_(u"配置平台(CMDB)"),
