@@ -1,7 +1,7 @@
 /**
 * Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
 * Edition) available.
-* Copyright (C) 2017-2019 THL A29 Limited, a Tencent company. All rights reserved.
+* Copyright (C) 2017-2020 THL A29 Limited, a Tencent company. All rights reserved.
 * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
 * http://opensource.org/licenses/MIT
@@ -38,6 +38,14 @@
             </single-ip-selector>
         </div>
         <div class="condition-area">
+            <div class="cloud-area-form">
+                <label>{{ i18n.showCloudArea }}</label>
+                <bk-switcher
+                    size="small"
+                    v-model="with_cloud_id"
+                    @change="updateValue('with_cloud_id', $event)">
+                </bk-switcher>
+            </div>
             <select-condition
                 ref="filterConditions"
                 :label="i18n.filter"
@@ -67,7 +75,8 @@
         staticIp: gettext('静态IP'),
         dynamicIp: gettext('动态IP'),
         filter: gettext('筛选条件'),
-        exclude: gettext('排除条件')
+        exclude: gettext('排除条件'),
+        showCloudArea: gettext('变量值是否带云区域：')
     }
 
     // ip选择器兼容标准运维国际化
@@ -97,7 +106,8 @@
                         ip: [],
                         topo: [],
                         filters: [],
-                        excludes: []
+                        excludes: [],
+                        with_cloud_id: false
                     }
                 }
             },
@@ -153,13 +163,14 @@
             }
         },
         data () {
-            const { selectors, ip, topo, filters, excludes } = this.value
+            const { selectors, ip, topo, filters, excludes, with_cloud_id } = this.value
             return {
                 selectors: selectors.slice(0),
                 ip: ip.slice(0),
                 topo: topo.slice(0),
                 filters: filters.slice(0),
                 excludes: excludes.slice(0),
+                with_cloud_id,
                 i18n
             }
         },
@@ -199,7 +210,7 @@
                 }
                 const filterValidate = this.$refs.filterConditions.validate()
                 const excludeValidate = this.$refs.excludeConditions.validate()
-            
+
                 return selectorValidate && filterValidate && excludeValidate
             }
         }
@@ -211,5 +222,13 @@
 }
 .condition-area {
     border-top: 1px dotted #c4c6cc;
+}
+.cloud-area-form {
+    margin: 20px 0 ;
+    &>label {
+        font-size: 12px;
+        color: #313238;
+        line-height: 20px;
+    }
 }
 </style>
